@@ -1,9 +1,11 @@
 import axios from "axios";
-import { signIn } from "../api";
+import { signUp } from "../api";
 
 const Root = () => {
   return (
-    <button onClick={() => signIn("user2", "password1")}>Test the api</button>
+    <button onClick={() => signUp("ussddda3dder2", "password1")}>
+      Test the api
+    </button>
   );
 };
 

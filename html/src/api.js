@@ -11,16 +11,18 @@ export const signIn = async (username, password) => {
     },
   });
 
-  await localforage.setItem("authKey", authkey);
+  localforage.setItem("authKey", authkey);
 };
 
 export const signUp = async (username, password) => {
-  const authKey = axios.post("http://localhost:5500/signUp", {
-    data: {
-      username,
-      password,
-    },
+  const {
+    data: { authKey },
+  } = await axios.post("http://localhost:5500/signUp", {
+    username,
+    password,
   });
+
+  console.log(authKey);
 
   localforage.setItem("authKey", authKey);
 };

@@ -134,7 +134,9 @@ app.post("/signUp", express.json(), async (req, res) => {
       .required("Password Required"),
   });
 
-  const { username, password } = req.body.data;
+  console.log(req.body);
+
+  const { username, password } = req.body;
 
   try {
     validationSchema.validateSync(
@@ -200,8 +202,18 @@ app.post("/signUp", express.json(), async (req, res) => {
     });
   }
 
+  const { id } = await db.one(
+    `
+    select id
+    from account
+    where 
+      username = $security$${username}$security$
+    `
+  );
+
   res.json({
     message: "Account successfully created",
+    authKey: id,
   });
 });
 
