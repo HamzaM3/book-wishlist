@@ -8,9 +8,9 @@ const db = pgp("postgres://test:pass@localhost:5432/mydb");
 app.use(cors());
 
 app.get("/", express.json(), async (req, res) => {
-  const authKey = req.headers.authkey;
+  const authkey = req.headers.authkey;
 
-  if (!authKey) {
+  if (!authkey) {
     res.json({
       error: "No Auth Key",
     });
@@ -24,7 +24,7 @@ app.get("/", express.json(), async (req, res) => {
     from
       account
     where
-      id = $security$${authKey}$security$;
+      id = $security$${authkey}$security$;
     `
   );
 
@@ -213,7 +213,7 @@ app.post("/signUp", express.json(), async (req, res) => {
 
   res.json({
     message: "Account successfully created",
-    authKey: id,
+    authkey: id,
   });
 });
 
