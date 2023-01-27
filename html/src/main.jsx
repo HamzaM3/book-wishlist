@@ -4,12 +4,14 @@ import {
   createBrowserRouter,
   RouterProvider,
   redirect,
+  Navigate,
 } from "react-router-dom";
 import Book from "./Book";
 import Layout from "./layouts/Layout";
 import AuthKeyProvider from "./contexts/Authkey";
 import ApiProvider from "./contexts/Api";
 import { Main, SignIn, SignUp } from "./routes";
+import "./styles/main.css";
 
 const goToRoot = async () => {
   return redirect("/");
@@ -19,6 +21,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <div>Error</div>,
     children: [
       {
         index: true,
@@ -35,8 +38,8 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/*",
-    loader: goToRoot,
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 

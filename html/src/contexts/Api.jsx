@@ -41,11 +41,14 @@ const ApiProvider = ({ children }) => {
   };
 
   const getBooks = async () => {
-    return axios.get("http://localhost:5500/", {
+    if (!authkey) return [];
+    const { data } = await axios.get("http://localhost:5500/", {
       headers: {
         authkey: authkey,
       },
     });
+    console.log(data);
+    return data;
   };
 
   return (

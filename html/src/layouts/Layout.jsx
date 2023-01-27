@@ -7,28 +7,31 @@ const Root = () => {
   const { signIn, logOut } = useApi();
 
   return (
-    <div>
-      <nav>
+    <div className="container">
+      <nav className="header">
         <Link to="/">
-          <h5>Secure book wishlist</h5>
+          <h1 className="title">Secure book wishlist</h1>
         </Link>
-        {connected ? (
-          <div>
-            <Link to="signin">
-              <button>Sign In</button>
-            </Link>
-            <Link to="signup">
-              <button>Sign Up</button>
-            </Link>
-          </div>
-        ) : (
-          <div>
-            <button onClick={() => logOut()}>Log Out</button>
-          </div>
-        )}
+        <div className="header-buttons">
+          {!connected ? (
+            <>
+              <Link to="signin">
+                <div className="header-button sign-in">Sign In</div>
+              </Link>
+              <Link to="signup">
+                <div className="header-button sign-up">Sign Up</div>
+              </Link>
+            </>
+          ) : (
+            <div className="header-button log-out" onClick={() => logOut()}>
+              Log Out
+            </div>
+          )}
+        </div>
       </nav>
-
-      <Outlet />
+      <div className="content">
+        <Outlet />
+      </div>
     </div>
   );
 };
