@@ -6,14 +6,16 @@ const app = express();
 const db = pgp("postgres://test:pass@localhost:5432/mydb");
 const db_functions = require("./db_functions")(db);
 const api_functions = require("./api_functions")(db_functions);
-const { getBooks, signIn, signUp } = api_functions;
+const { getBooks, signIn, signUp, addBook } = api_functions;
 
-app.use(cors());
+app.use(cors(), express.json());
 
-app.get("/", express.json(), getBooks.test, getBooks);
+app.get("/", getBooks.test, getBooks);
 
-app.get("/signIn", express.json(), signIn.test, signIn);
+app.get("/signIn", signIn.test, signIn);
 
-app.post("/signUp", express.json(), signUp.test, signUp);
+app.post("/signUp", signUp.test, signUp);
+
+app.post("", addBook.test, addBook);
 
 app.listen(5500);

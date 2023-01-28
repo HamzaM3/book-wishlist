@@ -15,6 +15,18 @@ const usernamePasswordSchema = yup
   })
   .strict();
 
+const bookSchema = yup
+  .object({
+    imgurl: yup.string().url().required(),
+    title: yup.string().min(1).required(),
+    author: yup.string().min(1).required(),
+    authkey: yup
+      .string()
+      .matches(/^[0-9]+$/)
+      .required(),
+  })
+  .strict();
+
 const api_functions = ({
   authkeyToUsername,
   usernameToAuthkey,
@@ -22,6 +34,7 @@ const api_functions = ({
   testAccountExists,
   testUsernamePassword,
   createNewAccount,
+  createNewBook,
 }) => {
   const getBooks = async (req, res) => {
     const authkey = req.headers.authkey;
@@ -131,10 +144,49 @@ const api_functions = ({
     next();
   };
 
+  const addBook = async (req, res) => {
+    const { authkey } = req.headers;
+    const { title, author, imgurl } = req.body;
+
+    if (!(await createNewBook(title, author, imgurl, authkey))) {
+      res.status(400).json({
+        error: "Error while saving book",
+      });
+      return;
+    }
+    res.end();
+  };
+
+  addBook.test = async (req, res, next) => {
+    const { authkey } = req.headers;
+    const { title, author, imgurl } = req.body;
+
+    try {
+      bookSchema.validateSync(
+        { authkey, title, author, imgurl },
+        { strict: true, abortEarly: false }
+      );
+    } catch (error) {
+      res.status(400).json({
+        error: error.errors,
+      });
+      return;
+    }
+
+    if (!(await authkeyToUsername(authkey))) {
+      res.status(400).json({
+        error: "Incorrect authkey",
+      });
+      return;
+    }
+    next();
+  };
+
   return {
     getBooks,
     signIn,
     signUp,
+    addBook,
   };
 };
 

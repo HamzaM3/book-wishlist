@@ -70,10 +70,28 @@ const db_functions = (db) => {
           $security$${password}$security$
         )
       `);
-      console.log("hello");
       return true;
     } catch (e) {
-      console.log(e);
+      return false;
+    }
+  };
+
+  const createNewBook = async (title, author, imgurl, authkey) => {
+    const username = await authkeyToUsername(authkey);
+
+    try {
+      await db.none(`
+      insert 
+        into book(username, title, author, imgurl)
+        values (
+          $security$${username}$security$,
+          $security$${title}$security$,
+          $security$${author}$security$,
+          $security$${imgurl}$security$
+        )
+      `);
+      return true;
+    } catch (e) {
       return false;
     }
   };
@@ -85,6 +103,7 @@ const db_functions = (db) => {
     testAccountExists,
     testUsernamePassword,
     createNewAccount,
+    createNewBook,
   };
 };
 
