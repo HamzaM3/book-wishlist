@@ -4,6 +4,14 @@ const cors = require("cors");
 const yup = require("yup");
 const app = express();
 const db = pgp("postgres://test:pass@localhost:5432/mydb");
+const {
+  authkeyToUsername,
+  usernameToAuthkey,
+  getDataFromUsername,
+  testAccountExists,
+  testUsernamePassword,
+  createNewAccount,
+} = require("./db_functions")(db);
 
 app.use(cors());
 
