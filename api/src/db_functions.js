@@ -70,8 +70,10 @@ const db_functions = (db) => {
           $security$${password}$security$
         )
       `);
+      console.log("hello");
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
   };
