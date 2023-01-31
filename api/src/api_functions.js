@@ -17,7 +17,7 @@ const usernamePasswordSchema = yup
 
 const bookSchema = yup
   .object({
-    imgurl: yup.string().url().required(),
+    imgurl: yup.string().url(),
     title: yup.string().min(1).required(),
     author: yup.string().min(1).required(),
     authkey: yup
@@ -148,7 +148,9 @@ const api_functions = ({
     const { authkey } = req.headers;
     const { title, author, imgurl } = req.body;
 
-    if (!(await createNewBook(title, author, imgurl, authkey))) {
+    const filename = downloadImage(imgurl);
+
+    if (!(await createNewBook(title, author, filename, authkey))) {
       res.status(400).json({
         error: "Error while saving book",
       });

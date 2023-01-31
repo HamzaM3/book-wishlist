@@ -51,6 +51,22 @@ const ApiProvider = ({ children }) => {
     return data;
   };
 
+  const addBook = async (title, author, bookCoverUrl) => {
+    await axios.post(
+      "http://localhost:5500/",
+      {
+        title,
+        author,
+        bookCoverUrl,
+      },
+      {
+        headers: {
+          authkey,
+        },
+      }
+    );
+  };
+
   return (
     <Api.Provider
       value={{
@@ -58,6 +74,7 @@ const ApiProvider = ({ children }) => {
         signUp,
         logOut,
         getBooks,
+        addBook,
       }}
     >
       {children}

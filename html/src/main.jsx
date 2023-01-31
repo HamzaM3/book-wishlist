@@ -6,11 +6,10 @@ import {
   redirect,
   Navigate,
 } from "react-router-dom";
-import Book from "./Book";
 import Layout from "./layouts/Layout";
 import AuthKeyProvider from "./contexts/Authkey";
 import ApiProvider from "./contexts/Api";
-import { Main, SignIn, SignUp } from "./routes";
+import { Main, SignIn, SignUp, AddBook } from "./routes";
 import "./styles/main.css";
 
 const goToRoot = async () => {
@@ -34,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "addbook",
+        element: <AddBook />,
       },
     ],
   },

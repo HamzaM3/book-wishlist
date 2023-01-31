@@ -27,8 +27,7 @@ const db_functions = (db) => {
     return db.any(`
       select
         b.title,
-        b.author,
-        b.imgUrl
+        b.author
       from
         book b
       where
@@ -82,12 +81,11 @@ const db_functions = (db) => {
     try {
       await db.none(`
       insert 
-        into book(username, title, author, imgurl)
+        into book(username, title, author)
         values (
           $security$${username}$security$,
           $security$${title}$security$,
-          $security$${author}$security$,
-          $security$${imgurl}$security$
+          $security$${author}$security$
         )
       `);
       return true;
