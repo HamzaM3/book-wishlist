@@ -1,48 +1,48 @@
 import { useState, useEffect } from "react";
 import Book from "../component/Book";
+import Welcome from "../component/Welcome";
 import { useApi } from "../contexts/Api";
 import { useAuthkey } from "../contexts/Authkey";
+import { css } from "@emotion/react";
 
-const getKey = (title, author, occurences) => {
-  return title + "-" + author + "-" + occurences[title + author];
-};
-
-const getBookList = (books) => {
-  const occurences = {};
-  const res = [];
-
-  for (let i = 0; i < books.length; i++) {
-    const { title, author, imgUrl } = books[i];
-    occurences[title + author] = occurences[title + author]
-      ? occurences[title + author] + 1
-      : 1;
-    res.push(
-      <Book
-        {...{ title, author, imgUrl }}
-        key={getKey(title, author, occurences)}
-      />
-    );
-  }
-  return res;
-};
+const titleStyle = css`
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 20px;
+`;
 
 const Main = () => {
   const { getBooks } = useApi();
   const { connected, authkey } = useAuthkey();
+
   const [books, setBooks] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (connected) getBooks().then(setBooks);
+    if (connected) setLoading(true);
   }, [authkey]);
 
+  useEffect(() => {
+    if (isLoading) {
+      getBooks()
+        .then(setBooks)
+        .then(() => setLoading(false));
+    }
+  }, [isLoading]);
+
   if (!connected) {
-    return <div>Create your private book wishlist</div>;
+    return <Welcome />;
   }
 
   return (
     <>
-      <div className="wishlist-title">Your secret wishlist</div>
-      {getBookList(books)}
+      <div css={titleStyle}>Your secret wishlist</div>
+      {books.map(({ title, author, bookcover, id: bookId }) => (
+        <Book
+          {...{ title, author, bookcover, bookId, setLoading }}
+          key={"book-" + bookId}
+        />
+      ))}
     </>
   );
 };

@@ -54,6 +54,8 @@ const buttonStyle = (background) => css`
 `;
 
 const contentStyle = css`
+  padding: 20px 0;
+
   flex-grow: 1;
 
   display: flex;

@@ -52,6 +52,7 @@ const ApiProvider = ({ children }) => {
   };
 
   const addBook = async (title, author, bookCoverUrl) => {
+    console.log(authkey);
     await axios.post(
       "http://localhost:5500/",
       {
@@ -67,6 +68,16 @@ const ApiProvider = ({ children }) => {
     );
   };
 
+  const deleteBook = async (id) => {
+    console.log(typeof id);
+    await axios.delete("http://localhost:5500/", {
+      data: { id },
+      headers: {
+        authkey,
+      },
+    });
+  };
+
   return (
     <Api.Provider
       value={{
@@ -75,6 +86,7 @@ const ApiProvider = ({ children }) => {
         logOut,
         getBooks,
         addBook,
+        deleteBook,
       }}
     >
       {children}

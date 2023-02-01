@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const db_functions = (db) => {
   const authkeyToUsername = async (authkey) => {
     const queryResult = await db.any(`
@@ -26,8 +29,10 @@ const db_functions = (db) => {
   const getDataFromUsername = async (username) => {
     return db.any(`
       select
+        b.id,
         b.title,
-        b.author
+        b.author,
+        b.bookcover
       from
         book b
       where
@@ -59,6 +64,32 @@ const db_functions = (db) => {
     return valid > 0;
   };
 
+  const testAuthorizedToAccessImage = async (username, bookcover) => {
+    const [{ valid }] = await db.any(`
+      select
+        count(*) as valid
+      from
+        book
+      where
+        username = $security$${username}$security$ and bookcover = $security$${bookcover}$security$;
+    `);
+
+    return valid > 0;
+  };
+
+  const testAuthorizedToAccessBook = async (username, id) => {
+    const [{ valid }] = await db.any(`
+      select
+        count(*) as valid
+      from
+        book
+      where
+        username = $security$${username}$security$ and id = $security$${id}$security$;
+    `);
+
+    return valid > 0;
+  };
+
   const createNewAccount = async (username, password) => {
     try {
       await db.none(`
@@ -75,23 +106,52 @@ const db_functions = (db) => {
     }
   };
 
-  const createNewBook = async (title, author, imgurl, authkey) => {
+  const createNewBook = async (title, author, filename, authkey) => {
     const username = await authkeyToUsername(authkey);
 
     try {
       await db.none(`
       insert 
-        into book(username, title, author)
+        into book(username, title, author${filename ? ", bookcover" : ""})
         values (
           $security$${username}$security$,
           $security$${title}$security$,
           $security$${author}$security$
+          ${filename ? `, $security$${filename}$security$` : ""}
         )
       `);
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
+  };
+
+  const deleteBookFromId = async (id) => {
+    try {
+      const bookcover = await getImageFromId(id);
+
+      console.log(bookcover);
+
+      await fs.unlinkSync(path.resolve(__dirname, "../bookCovers", bookcover));
+
+      await db.none(`
+        delete from book where id = $security$${id}$security$
+      `);
+
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  };
+
+  const getImageFromId = async (id) => {
+    const [{ bookcover }] = await db.any(`
+      select bookcover from book where id = $security$${id}$security$
+    `);
+
+    return bookcover;
   };
 
   return {
@@ -102,6 +162,10 @@ const db_functions = (db) => {
     testUsernamePassword,
     createNewAccount,
     createNewBook,
+    testAuthorizedToAccessImage,
+    deleteBookFromId,
+    testAuthorizedToAccessBook,
+    getImageFromId,
   };
 };
 

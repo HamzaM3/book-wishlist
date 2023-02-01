@@ -19,8 +19,9 @@ const AddBook = () => {
           author: "",
           bookCoverUrl: "",
         }}
-        onSubmit={async ({ title, author, bookCoverUrl }) => {
+        onSubmit={async ({ title, author, bookCoverUrl }, { resetForm }) => {
           addBook(title, author, bookCoverUrl);
+          resetForm();
         }}
       >
         <Form>
@@ -49,7 +50,7 @@ const AddBook = () => {
               placeholder="http://book-cover.com"
             />
           </div>
-          <button type="submit">Sign up</button>
+          <button type="submit">Add Book</button>
         </Form>
       </Formik>
     </div>

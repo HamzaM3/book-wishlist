@@ -20,7 +20,7 @@ const SignUp = () => {
         }}
       >
         <Form>
-          <div className="form-title">Sign In</div>
+          <div className="form-title">Sign Up</div>
           <div className="form-field">
             <div className="form-label">Username:</div>
             <Field id="username" name="username" placeholder="Username"></Field>
