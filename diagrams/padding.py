@@ -87,5 +87,5 @@ message = "I love kno;j;jf;akf'kvdszijf.safn,xv xmlkdzjf;sfn.wing"
 label= "A very efficient label! Don't hack me !!"
 padded = oaep(message, label, 128, 32)
 print(len(padded))
-recovered = oaep_r(padded, label).decode('utf-8')
+recovered = oaep_r(padded, 32).decode('utf-8')
 print(recovered)
