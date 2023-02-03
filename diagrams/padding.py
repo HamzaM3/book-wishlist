@@ -75,9 +75,9 @@ def oaep_r(crypted, hashLength):
   mask_data = mgf1(seed, len(masked_data))
 
   data = byte_xor(masked_data, mask_data)
-  print(data)
+  
   data = data[33:]
-  print(type(data[0]))
+  
   while(data[0] != 1):
     data = data[1:]
 
