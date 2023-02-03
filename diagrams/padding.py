@@ -4,13 +4,23 @@ from random import randint
 
 def h(m):
   return sha256(m).digest()
-h_len = 32
+
+def byte_xor(a, b):
+  res = []
+  for x, y in zip(a,b):
+    res.append(x^y)
+  return bytes(res)
+
+def randomBytes(length):
+  x = randint(0, 256**length)
+  x = intToBytes(x, length)
+  return x
 
 def intToBytes(n, length):
   h = hex(n)[2:]
   h = list(map(lambda x: int(x, 16), couple(h)))
   h = bytes(bytearray(h))[-length:]
-  h = b'\x00' * (length - len(h)) + h
+  h = (b'\x00' * (length - len(h)) if length > len(h) else b'')+ h
   return h
 
 def couple(s):
@@ -31,10 +41,8 @@ def mgf1(seed, length):
 
 # byte by byte operations
 def oaep(message, label, keyLength, hashLength):
-
   label = label.encode('utf-8')
   label = h(label)
-
   header = '\x00'.encode('utf-8')
   message = message.encode('utf-8')
 
@@ -75,21 +83,9 @@ def oaep_r(crypted, hashLength):
 
   return data[1:]
 
-
-def byte_xor(a, b):
-  res = []
-  for x, y in zip(a,b):
-    res.append(x^y)
-  return bytes(res)
-
-
-def randomBytes(length):
-  x = randint(0, 256**length)
-  x = intToBytes(x, length)
-  return x
-
-message = "I love knowing"
+message = "I love kno;j;jf;akf'kvdszijf.safn,xv xmlkdzjf;sfn.wing"
 label= "A very efficient label! Don't hack me !!"
 padded = oaep(message, label, 128, 32)
+print(len(padded))
 recovered = oaep_r(padded, label).decode('utf-8')
 print(recovered)
