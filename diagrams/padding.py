@@ -65,8 +65,8 @@ def oaep(message, label, keyLength, hashLength):
 
 
 def oaep_r(crypted, hashLength):
-  masked_seed = crypted[1:33]
-  masked_data = crypted[33:]
+  masked_seed = crypted[1:hashLength+1]
+  masked_data = crypted[hashLength+1:]
 
   mask_seed = mgf1(masked_data, len(masked_seed))
 
@@ -76,8 +76,8 @@ def oaep_r(crypted, hashLength):
 
   data = byte_xor(masked_data, mask_data)
   
-  data = data[33:]
-  
+  data = data[hashLength+1:]
+
   while(data[0] != 1):
     data = data[1:]
 
