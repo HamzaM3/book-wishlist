@@ -1,7 +1,6 @@
 from random import randint
-from math import sqrt, floor, gcd
-
-scale = 2**32
+from math import sqrt, floor, gcd, lcm
+from cryptography.hazmat.primitives.asymmetric.rsa import generate_private_key
 
 def testIfPrime(n):
   up = floor(sqrt(n))
@@ -16,7 +15,7 @@ def getNextPrime(n):
     n += 2
   return n
 
-def getACoprime(n) :
+def getACoprime(n, scale) :
   m = 1
   while(m < scale):
     m = randint(scale**2, 2*scale**2)
@@ -42,24 +41,45 @@ def getAModInverse(x, m):
   return bv[1]
 
 
-def getLargePrimeNumber() :
+def getLargePrimeNumber(scale) :
   m = randint(scale, scale*2)
   return getNextPrime(m + (m % 2)+1)
 
-def rsaKeyCouple():
-  p = getLargePrimeNumber()
-  q = getLargePrimeNumber()
+def rsaKeyCouple(scale):
+  p = getLargePrimeNumber(scale)
+  q = getLargePrimeNumber(scale)
 
   n = p * q
   phi = (p - 1) * (q - 1)
 
-  d = getACoprime(phi)
-  e = getAModInverse(d, phi) + phi
+  d = getACoprime(phi,scale)
+  e = (getAModInverse(d, phi) + phi) % phi
 
   public = [e, n]
   private = [d, n]
   
   return {'private': private, 'public': public}
+
+def rsaKeyCoupleLib(bits):
+  private_key = generate_private_key(public_exponent=65537, key_size=bits)
+
+  p = private_key.private_numbers().p
+  q = private_key.private_numbers().q
+
+  phi = lcm(p-1, q-1)
+  
+  d = getACoprime(phi,2**(bits//2)) % phi
+  e = (getAModInverse(d, phi) + phi) % phi
+
+  n = p*q
+
+  assert(d*e % phi == 1)
+
+  public = [e, n]
+  private = [d, n]
+  
+  return {'private': private, 'public': public}
+
 
 def getBinaryArray(n):
   res = []
@@ -88,10 +108,10 @@ def decrypt(message, publickey):
 
   return getModPower(message, e, n)
 
-message = randint(scale /2, scale)
-keys = rsaKeyCouple()
-print(message)
-crypted = encrypt(message, keys['private'])
-print(crypted)
-decry = decrypt(crypted, keys['public'])
-print(decry)
+if (__name__=="__main__"):
+  scale = 2**32
+  message = randint(scale /2, scale)
+  keys = rsaKeyCouple(scale)
+  crypted = encrypt(message, keys['private'])
+  decry = decrypt(crypted, keys['public'])
+  print(message, crypted, decry)

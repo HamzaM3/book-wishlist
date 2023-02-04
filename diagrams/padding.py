@@ -25,8 +25,10 @@ def intToBytes(n, length):
 
 def couple(s):
   res = []
-  for i in range(0, len(s), 2):
+  for i in range(len(s) % 2, len(s), 2):
     res.append(s[i: i+2])
+  if len(s) % 2 == 1:
+    res.insert(0, s[0])
   return res
 
 def mgf1(seed, length):
@@ -46,7 +48,7 @@ def oaep(message, label, keyLength, hashLength):
   header = '\x00'.encode('utf-8')
   message = message.encode('utf-8')
 
-  tmp_len = len(label) + 1 + len(message)
+  tmp_len = len(label) + len(header) + len(message)
   num_zero = keyLength - tmp_len - hashLength - 1
 
   data = header + label + ((num_zero - 1) *b'\x00') + b'\x01' + message
@@ -61,7 +63,8 @@ def oaep(message, label, keyLength, hashLength):
 
   masked_seed = byte_xor(mask_seed, seed)
 
-  return b'\x00' + masked_seed + masked_data
+  res =  b'\x00' + masked_seed + masked_data
+  return res
 
 
 def oaep_r(crypted, hashLength):
@@ -77,11 +80,25 @@ def oaep_r(crypted, hashLength):
   data = byte_xor(masked_data, mask_data)
   
   data = data[hashLength+1:]
-
   while(data[0] != 1):
     data = data[1:]
 
   return data[1:]
+
+def cut(message, keyLength, hashLength):
+  block_size = keyLength - 3 - 2*hashLength
+  res = []
+  for i in range(0, len(message), block_size):
+    res.append(message[i: i+ block_size])
+
+  return res
+
+def fuse(blocks):
+  res = b''
+  for b in blocks:
+    res = res + b
+  return res
+
 
 if(__name__=='__main__'):
   message = "I love it"
