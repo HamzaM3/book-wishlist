@@ -1,13 +1,14 @@
 module.exports = ({ authkeyToUsername, getDataFromUsername }) => {
-  const getBooks = async (req, res) => {
-    const authkey = req.headers.authkey;
+  const getBooks = async (req, res, next) => {
+    const authkey = req.authkey;
     const username = await authkeyToUsername(authkey);
     const books = await getDataFromUsername(username);
-    res.json(books);
+    res.data = books;
+    next();
   };
 
   getBooks.test = async (req, res, next) => {
-    const authkey = req.headers.authkey;
+    const authkey = req.authkey;
     if (authkey === undefined) {
       res.status(400).json({
         error: "No authkey received",

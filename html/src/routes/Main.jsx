@@ -4,6 +4,7 @@ import Welcome from "../component/Welcome";
 import { useApi } from "../contexts/Api";
 import { useAuthkey } from "../contexts/Authkey";
 import { css } from "@emotion/react";
+import { useRSA } from "../contexts/RSA";
 
 const titleStyle = css`
   font-size: 30px;
@@ -14,6 +15,7 @@ const titleStyle = css`
 const Main = () => {
   const { getBooks } = useApi();
   const { connected, authkey } = useAuthkey();
+  const RSA = useRSA();
 
   const [books, setBooks] = useState([]);
   const [isLoading, setLoading] = useState(true);
@@ -23,12 +25,16 @@ const Main = () => {
   }, [authkey]);
 
   useEffect(() => {
-    if (isLoading) {
+    if (!RSA.isLoading && isLoading && connected) {
       getBooks()
         .then(setBooks)
         .then(() => setLoading(false));
     }
-  }, [isLoading]);
+  }, [isLoading, RSA.isLoading]);
+
+  if (RSA.isLoading) {
+    return <div>Key generation ongoing</div>;
+  }
 
   if (!connected) {
     return <Welcome />;

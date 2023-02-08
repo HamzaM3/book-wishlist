@@ -20,10 +20,6 @@ const bookSchema = yup
     imgurl: yup.string().url(),
     title: yup.string().min(1).required(),
     author: yup.string().min(1).required(),
-    authkey: yup
-      .string()
-      .matches(/^[0-9]+$/)
-      .required(),
   })
   .strict();
 

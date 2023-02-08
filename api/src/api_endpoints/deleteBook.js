@@ -7,6 +7,7 @@ module.exports = ({
 }) => {
   const deleteBook = async (req, res) => {
     const { id } = req.body;
+
     if (!(await deleteBookFromId(id))) {
       res.status(500).json({
         error: "Error while deleting the entry",
@@ -18,9 +19,7 @@ module.exports = ({
 
   deleteBook.test = async (req, res, next) => {
     const { id } = req.body;
-    const { authkey } = req.headers;
-
-    console.log("id", id);
+    const authkey = req.authkey;
 
     if (typeof id !== "number") {
       res.status(400).json({
@@ -29,11 +28,20 @@ module.exports = ({
       return;
     }
 
-    console.log("authkey:", authkey);
-    const username =
-      authkey && /^[0-9]+$/.test(authkey)
-        ? await authkeyToUsername(authkey)
-        : undefined;
+    if (
+      !(
+        authkey &&
+        (typeof authkey === "number" ||
+          (typeof authkey === "string" && /[0-9]+/.test(authkey)))
+      )
+    ) {
+      res.status(400).json({
+        error: "Invalid authkey",
+      });
+      return;
+    }
+
+    const username = await authkeyToUsername(authkey);
 
     if (!username) {
       res.status(400).json({

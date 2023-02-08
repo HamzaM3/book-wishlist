@@ -54,26 +54,20 @@ const crossStyle = css`
 
 const Book = ({ bookcover, title, author, bookId, setLoading }) => {
   const [imageSrc, setImageSrc] = useState("");
-  const { authkey } = useAuthkey();
-  const { deleteBook } = useApi();
-
-  const src = `http://localhost:5500/bookCover/${bookcover}`;
-  const options = {
-    headers: {
-      authkey,
-    },
-  };
+  const { deleteBook, getImage } = useApi();
 
   useEffect(() => {
-    fetch(src, options)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setImageSrc(URL.createObjectURL(blob));
-      });
+    (async () => {
+      if (bookcover) {
+        const image = await getImage({ image: bookcover });
+        console.log(image);
+        setImageSrc("data:image/jpg;base64, " + image);
+      }
+    })();
   }, [bookcover]);
 
   const deleteClick = async (bookId) => {
-    await deleteBook(bookId);
+    await deleteBook({ id: bookId });
     setLoading(true);
   };
 

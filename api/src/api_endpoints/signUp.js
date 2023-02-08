@@ -5,7 +5,7 @@ module.exports = ({
   createNewAccount,
   testAccountExists,
 }) => {
-  const signUp = async (req, res) => {
+  const signUp = async (req, res, next) => {
     const { username, password } = req.body;
 
     if (!(await createNewAccount(username, password))) {
@@ -16,9 +16,10 @@ module.exports = ({
     }
 
     const authkey = await usernameToAuthkey(username);
-    res.json({
+    res.data = {
       authkey,
-    });
+    };
+    next();
   };
 
   signUp.test = async (req, res, next) => {

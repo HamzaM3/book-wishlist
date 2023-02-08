@@ -20,7 +20,7 @@ const AddBook = () => {
           bookCoverUrl: "",
         }}
         onSubmit={async ({ title, author, bookCoverUrl }, { resetForm }) => {
-          addBook(title, author, bookCoverUrl);
+          addBook({ title, author, bookCoverUrl });
           resetForm();
         }}
       >

@@ -1,23 +1,23 @@
 const path = require("path");
+const fs = require("fs");
 
 module.exports = ({ authkeyToUsername, testAuthorizedToAccessImage }) => {
-  const getImage = async (req, res) => {
-    const { image } = req.params;
+  const getImage = async (req, res, next) => {
+    const { image } = req.body;
 
     const imagePath = path.resolve(__dirname, "../..", "bookCovers/" + image);
 
-    res.sendFile(imagePath, {}, (err) => {
-      if (err) {
-        res.status(404).json({
-          error: "Book cover not found",
-        });
-      }
-    });
+    const file = fs.readFileSync(imagePath, { encoding: "base64" });
+
+    res.data = file;
+
+    next();
   };
 
   getImage.test = async (req, res, next) => {
-    const authkey = req.headers.authkey;
-    const { image } = req.params;
+    const authkey = req.authkey;
+    const { image } = req.body;
+
     if (authkey === undefined) {
       res.status(400).json({
         error: "No authkey received",

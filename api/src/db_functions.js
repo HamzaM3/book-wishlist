@@ -131,9 +131,10 @@ const db_functions = (db) => {
     try {
       const bookcover = await getImageFromId(id);
 
-      console.log(bookcover);
-
-      await fs.unlinkSync(path.resolve(__dirname, "../bookCovers", bookcover));
+      if (bookcover)
+        await fs.unlinkSync(
+          path.resolve(__dirname, "../bookCovers", bookcover)
+        );
 
       await db.none(`
         delete from book where id = $security$${id}$security$

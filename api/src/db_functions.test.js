@@ -49,7 +49,7 @@ describe("getDataFromUsername", () => {
       .strict();
     const data = await getDataFromUsername("user");
     expect(data.length).toBeGreaterThan(0);
-    console.log(data);
+
     expect(validator.isValidSync(data)).toBe(true);
   });
   it("returns [] if the account doesn't exists", async () => {

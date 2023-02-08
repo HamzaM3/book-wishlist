@@ -9,7 +9,7 @@ const { bookSchema } = require("./utils/schemas");
 
 module.exports = ({ createNewBook, authkeyToUsername }) => {
   const addBook = async (req, res) => {
-    const { authkey } = req.headers;
+    const authkey = req.authkey;
     const { title, author, filename } = req.body;
 
     if (!(await createNewBook(title, author, filename, authkey))) {
@@ -53,12 +53,25 @@ module.exports = ({ createNewBook, authkeyToUsername }) => {
   };
 
   addBook.test = async (req, res, next) => {
-    const { authkey } = req.headers;
-    const { title, author, imgurl } = req.body;
+    const authkey = req.authkey;
+    const { title, author, bookCoverUrl } = req.body;
+
+    if (
+      !(
+        authkey &&
+        (typeof authkey === "number" ||
+          (typeof authkey === "string" && /[0-9]+/.test(authkey)))
+      )
+    ) {
+      res.status(400).json({
+        error: "Invalid authkey",
+      });
+      return;
+    }
 
     try {
       bookSchema.validateSync(
-        { authkey, title, author, imgurl },
+        { title, author, bookCoverUrl },
         { strict: true, abortEarly: false }
       );
     } catch (error) {

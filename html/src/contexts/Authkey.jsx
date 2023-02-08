@@ -27,7 +27,7 @@ const AuthKeyProvider = ({ children }) => {
         authkey,
         updateAuthkey,
         removeAuthkey,
-        connected: authkey !== undefined,
+        connected: !!authkey,
       }}
     >
       {children}

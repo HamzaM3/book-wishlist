@@ -9,6 +9,9 @@ import {
 import Layout from "./layouts/Layout";
 import AuthKeyProvider from "./contexts/Authkey";
 import ApiProvider from "./contexts/Api";
+import RSAProvider from "./contexts/RSA";
+import AESProvider from "./contexts/AES";
+import CryptoProvider from "./contexts/Crypto";
 import { Main, SignIn, SignUp, AddBook } from "./routes";
 import "./styles/main.css";
 
@@ -48,10 +51,16 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthKeyProvider>
-      <ApiProvider>
-        <RouterProvider router={router} />
-      </ApiProvider>
-    </AuthKeyProvider>
+    <RSAProvider>
+      <AESProvider>
+        <AuthKeyProvider>
+          <CryptoProvider>
+            <ApiProvider>
+              <RouterProvider router={router} />
+            </ApiProvider>
+          </CryptoProvider>
+        </AuthKeyProvider>
+      </AESProvider>
+    </RSAProvider>
   </React.StrictMode>
 );

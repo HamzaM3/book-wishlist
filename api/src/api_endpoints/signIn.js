@@ -5,16 +5,17 @@ module.exports = ({
   testAccountExists,
   testUsernamePassword,
 }) => {
-  const signIn = async (req, res) => {
-    const { username } = req.query;
+  const signIn = async (req, res, next) => {
+    const { username } = req.body;
     const authkey = await usernameToAuthkey(username);
-    res.json({
+    res.data = {
       authkey,
-    });
+    };
+    next();
   };
 
   signIn.test = async (req, res, next) => {
-    const { username, password } = req.query;
+    const { username, password } = req.body;
 
     try {
       usernamePasswordSchema.validateSync(
