@@ -14,6 +14,7 @@ const SignUp = () => {
       <Formik
         initialValues={{
           username: "",
+          password: "",
         }}
         onSubmit={async ({ username, password }) => {
           signUp(username, password);

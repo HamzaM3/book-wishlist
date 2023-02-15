@@ -6,12 +6,20 @@ module.exports = () => {
 
   const decryptMiddleware = (req, res, next) => {
     const { encrypted, AESKey } = req.body;
-    const { key, iv } = JSON.parse(RSA.decrypt(AESKey));
-    const { data, pem, authkey } = JSON.parse(AES.decrypt(encrypted, key, iv));
-    req.body = data;
-    req.authkey = authkey;
-    req.pem = pem;
-    next();
+    try {
+      const { key, iv } = JSON.parse(RSA.decrypt(AESKey));
+      const { data, pem, authkey } = JSON.parse(
+        AES.decrypt(encrypted, key, iv)
+      );
+      req.body = data;
+      req.authkey = authkey;
+      req.pem = pem;
+      next();
+    } catch (e) {
+      res.status(400).json({
+        error: "Wrong keys",
+      });
+    }
   };
 
   const encryptMiddleware = (req, res) => {

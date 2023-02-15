@@ -1,32 +1,47 @@
 const fs = require("fs");
 const path = require("path");
+const forge = require("node-forge");
+
+const { getBytesSync } = forge.random;
+const { bytesToHex } = forge.util;
+
+const getSecurity = () =>
+  bytesToHex(getBytesSync(16))
+    .split("")
+    .filter((x) => !/[0-9]/.test(x))
+    .join("");
 
 const db_functions = (db) => {
   const authkeyToUsername = async (authkey) => {
+    const security = getSecurity();
     const queryResult = await db.any(`
       select
         username
       from
         account
       where
-        id = $security$${authkey}$security$;
+        authkey = $${security}$${authkey}$${security}$;
     `);
     if (queryResult.length === 0) return undefined;
     else return queryResult[0].username;
   };
 
   const usernameToAuthkey = async (username) => {
+    const security = getSecurity();
+    console.log(username);
     const queryResult = await db.any(`
-      select id
+      select authkey
       from account
       where 
-        username = $security$${username}$security$
+        username = $${security}$${username}$${security}$
     `);
+    console.log(queryResult);
     if (queryResult.length === 0) return undefined;
-    else return queryResult[0].id;
+    else return queryResult[0].authkey;
   };
 
-  const getDataFromUsername = async (username) => {
+  const getDataFromUsername = async (authkey) => {
+    const security = getSecurity();
     return db.any(`
       select
         b.id,
@@ -36,68 +51,81 @@ const db_functions = (db) => {
       from
         book b
       where
-        b.username = $security$${username}$security$;
+        b.authkey = $${security}$${authkey}$${security}$;
     `);
   };
 
   const testAccountExists = async (username) => {
+    const security = getSecurity();
     const queryResult = await db.any(`
       select
-        id
+        authkey
       from
         account
       where
-        username = $security$${username}$security$;
+        username = $${security}$${username}$${security}$;
     `);
     return queryResult.length !== 0;
   };
 
-  const testUsernamePassword = async (username, password) => {
+  const testUsernamePassword = async (username, hashedPass) => {
+    const security = getSecurity();
+
     const [{ valid }] = await db.any(`
       select
         count(*) as valid
       from
         account
       where
-        username = $security$${username}$security$ and pass = $security$${password}$security$;
+        username = $${security}$${username}$${security}$
+        and 
+        hashedPass = $${security}$${hashedPass}$${security}$;
     `);
     return valid > 0;
   };
 
-  const testAuthorizedToAccessImage = async (username, bookcover) => {
+  const testAuthorizedToAccessImage = async (authkey, bookcover) => {
+    const security = getSecurity();
     const [{ valid }] = await db.any(`
       select
         count(*) as valid
       from
         book
       where
-        username = $security$${username}$security$ and bookcover = $security$${bookcover}$security$;
+        authkey = $${security}$${authkey}$${security}$
+        and
+        bookcover = $${security}$${bookcover}$${security}$;
     `);
 
     return valid > 0;
   };
 
-  const testAuthorizedToAccessBook = async (username, id) => {
+  const testAuthorizedToAccessBook = async (authkey, id) => {
+    const security = getSecurity();
     const [{ valid }] = await db.any(`
       select
         count(*) as valid
       from
         book
       where
-        username = $security$${username}$security$ and id = $security$${id}$security$;
+        authkey = $${security}$${authkey}$${security}$
+        and
+        id = $${security}$${id}$${security}$;
     `);
 
     return valid > 0;
   };
 
-  const createNewAccount = async (username, password) => {
+  const createNewAccount = async (username, hashedPass, authkey) => {
+    const security = getSecurity();
     try {
       await db.none(`
       insert 
-        into account(username, pass)
+        into account(username, hashedPass, authkey)
         values (
-          $security$${username}$security$,
-          $security$${password}$security$
+          $${security}$${username}$${security}$,
+          $${security}$${hashedPass}$${security}$,
+          $${security}$${authkey}$${security}$
         )
       `);
       return true;
@@ -106,18 +134,17 @@ const db_functions = (db) => {
     }
   };
 
-  const createNewBook = async (title, author, filename, authkey) => {
-    const username = await authkeyToUsername(authkey);
-
+  const createNewBook = async (title, author, bookcover, authkey) => {
+    const security = getSecurity();
     try {
       await db.none(`
       insert 
-        into book(username, title, author${filename ? ", bookcover" : ""})
+        into book(authkey, title, author${bookcover ? ", bookcover" : ""})
         values (
-          $security$${username}$security$,
-          $security$${title}$security$,
-          $security$${author}$security$
-          ${filename ? `, $security$${filename}$security$` : ""}
+          $${security}$${authkey}$${security}$,
+          $${security}$${title}$${security}$,
+          $${security}$${author}$${security}$
+          ${bookcover ? `, $${security}$${bookcover}$${security}$` : ""}
         )
       `);
       return true;
@@ -129,6 +156,7 @@ const db_functions = (db) => {
 
   const deleteBookFromId = async (id) => {
     try {
+      const security = getSecurity();
       const bookcover = await getImageFromId(id);
 
       if (bookcover)
@@ -137,7 +165,7 @@ const db_functions = (db) => {
         );
 
       await db.none(`
-        delete from book where id = $security$${id}$security$
+        delete from book where id = $${security}$${id}$${security}$
       `);
 
       return true;
@@ -148,8 +176,9 @@ const db_functions = (db) => {
   };
 
   const getImageFromId = async (id) => {
+    const security = getSecurity();
     const [{ bookcover }] = await db.any(`
-      select bookcover from book where id = $security$${id}$security$
+      select bookcover from book where id = $${security}$${id}$${security}$
     `);
 
     return bookcover;

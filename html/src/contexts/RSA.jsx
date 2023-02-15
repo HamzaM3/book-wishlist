@@ -28,12 +28,13 @@ const RSAProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const f = async () => {
-      setServerKeys(await getServerKeys());
-      setLoading(false);
-    };
-    if (machineKeys) f();
-  }, [machineKeys]);
+    (async () => {
+      if (machineKeys && isLoading) {
+        setServerKeys(await getServerKeys());
+        setLoading(false);
+      }
+    })();
+  }, [machineKeys, isLoading]);
 
   return (
     <RSA.Provider
@@ -43,6 +44,7 @@ const RSAProvider = ({ children }) => {
         encrypt,
         decrypt,
         isLoading,
+        getKeys: async () => setServerKeys(await getServerKeys()),
       }}
     >
       {children}

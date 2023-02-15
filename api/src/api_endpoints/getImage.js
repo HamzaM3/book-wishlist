@@ -34,7 +34,7 @@ module.exports = ({ authkeyToUsername, testAuthorizedToAccessImage }) => {
       return;
     }
 
-    if (!(await testAuthorizedToAccessImage(username, image))) {
+    if (!(await testAuthorizedToAccessImage(authkey, image))) {
       res.status(400).json({
         error: "Unauthorized to access image",
       });

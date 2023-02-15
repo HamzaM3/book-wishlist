@@ -1,13 +1,15 @@
 const express = require("express");
 const pgp = require("pg-promise")();
 const cors = require("cors");
-const yup = require("yup");
 const app = express();
+
 const db = pgp("postgres://test:pass@localhost:5432/mydb");
+
 const db_functions = require("./src/db_functions")(db);
 const api_functions = require("./src/api_endpoints/index")(db_functions);
 const { getBooks, signIn, signUp, addBook, getImage, deleteBook } =
   api_functions;
+
 const { sendKeys, decryptMiddleware, encryptMiddleware } =
   require("./crypto/middleware")();
 

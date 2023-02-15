@@ -56,13 +56,8 @@ module.exports = ({ createNewBook, authkeyToUsername }) => {
     const authkey = req.authkey;
     const { title, author, bookCoverUrl } = req.body;
 
-    if (
-      !(
-        authkey &&
-        (typeof authkey === "number" ||
-          (typeof authkey === "string" && /[0-9]+/.test(authkey)))
-      )
-    ) {
+    console.log(authkey.length, /^[0-9a-f]{128}$/.test(authkey));
+    if (!(authkey && /^[0-9a-f]{128}$/.test(authkey))) {
       res.status(400).json({
         error: "Invalid authkey",
       });

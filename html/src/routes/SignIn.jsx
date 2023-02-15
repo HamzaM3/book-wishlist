@@ -1,6 +1,5 @@
 import { Formik, Form, Field } from "formik";
 import { Navigate } from "react-router-dom";
-import * as yup from "yup";
 import { useApi } from "../contexts/Api";
 import { useAuthkey } from "../contexts/Authkey";
 
@@ -15,6 +14,7 @@ const SignIn = () => {
       <Formik
         initialValues={{
           username: "",
+          password: "",
         }}
         onSubmit={async ({ username, password }) => {
           signIn(username, password);

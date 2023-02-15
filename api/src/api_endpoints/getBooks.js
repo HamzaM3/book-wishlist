@@ -1,8 +1,7 @@
 module.exports = ({ authkeyToUsername, getDataFromUsername }) => {
   const getBooks = async (req, res, next) => {
     const authkey = req.authkey;
-    const username = await authkeyToUsername(authkey);
-    const books = await getDataFromUsername(username);
+    const books = await getDataFromUsername(authkey);
     res.data = books;
     next();
   };

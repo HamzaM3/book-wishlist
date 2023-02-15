@@ -7,10 +7,10 @@ const usernamePasswordSchema = yup
       .min(4, "Username too short")
       .max(32, "Username too long")
       .required("Username required"),
-    password: yup
+    hashedPass: yup
       .string()
-      .min(8, "Password too short")
-      .max(32, "Password too long")
+      .length(64, "Something is wrong")
+      .matches(/^[a-f0-9]+$/, "Something is wrong")
       .required("Password required"),
   })
   .strict();

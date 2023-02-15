@@ -19,35 +19,38 @@ const goToRoot = async () => {
   return redirect("/");
 };
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    errorElement: <div>Error</div>,
-    children: [
-      {
-        index: true,
-        element: <Main />,
-      },
-      {
-        path: "signin",
-        element: <SignIn />,
-      },
-      {
-        path: "signup",
-        element: <SignUp />,
-      },
-      {
-        path: "addbook",
-        element: <AddBook />,
-      },
-    ],
-  },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
-]);
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Layout />,
+      errorElement: <div>Error</div>,
+      children: [
+        {
+          index: true,
+          element: <Main />,
+        },
+        {
+          path: "signin",
+          element: <SignIn />,
+        },
+        {
+          path: "signup",
+          element: <SignUp />,
+        },
+        {
+          path: "addbook",
+          element: <AddBook />,
+        },
+      ],
+    },
+    {
+      path: "*",
+      element: <Navigate to="/" replace />,
+    },
+  ],
+  { basename: "/book_wishlist" }
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

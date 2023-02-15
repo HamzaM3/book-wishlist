@@ -5,13 +5,23 @@ import { useRSA } from "./RSA";
 import { useAES } from "./AES";
 import { useAuthkey } from "./Authkey";
 
-const { publicKeyToPem, publicKeyFromPem } = forge.pki;
-const { BigInteger } = forge.jsbn;
+const { publicKeyToPem } = forge.pki;
 
 const Crypto = createContext({});
 
 export const useCrypto = () => {
   return useContext(Crypto);
+};
+
+const throwError = (e, RSA) => {
+  if (!e.response || !e.response.data) {
+    throw e;
+  }
+  if (!e.response.data.error || e.response.data.error !== "Wrong keys") {
+    throw e.response.data;
+  }
+  RSA.getKeys();
+  throw e.response.data;
 };
 
 const BASE_URL = "http://localhost:5500";
@@ -45,7 +55,7 @@ const CryptoProvider = ({ children }) => {
         if (!res.data) return;
         return decrypt(res.data.encrypted, res.data.AESKey);
       } catch (e) {
-        throw e.response.data;
+        throwError(e, RSA);
       }
     };
   };
@@ -59,7 +69,7 @@ const CryptoProvider = ({ children }) => {
         if (!res.data) return;
         return decrypt(res.data.encrypted, res.data.AESKey);
       } catch (e) {
-        throw e.response.data;
+        throwError(e, RSA);
       }
     };
   };
@@ -73,7 +83,7 @@ const CryptoProvider = ({ children }) => {
         if (!res.data) return;
         return decrypt(res.data.encrypted, res.data.AESKey);
       } catch (e) {
-        throw e.response.data;
+        throwError(e, RSA);
       }
     };
   };

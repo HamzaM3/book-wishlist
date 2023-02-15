@@ -28,13 +28,7 @@ module.exports = ({
       return;
     }
 
-    if (
-      !(
-        authkey &&
-        (typeof authkey === "number" ||
-          (typeof authkey === "string" && /[0-9]+/.test(authkey)))
-      )
-    ) {
+    if (!(authkey && /^[0-9a-f]{128}$/.test(authkey))) {
       res.status(400).json({
         error: "Invalid authkey",
       });
@@ -50,7 +44,7 @@ module.exports = ({
       return;
     }
 
-    if (!(await testAuthorizedToAccessBook(username, id))) {
+    if (!(await testAuthorizedToAccessBook(authkey, id))) {
       res.status(404).json({
         error: "Unauthorized to delete this entry",
       });

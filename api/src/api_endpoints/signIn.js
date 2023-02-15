@@ -1,5 +1,7 @@
 const { usernamePasswordSchema } = require("./utils/schemas");
 
+const { getHashedPass } = require("../../crypto/hashing");
+
 module.exports = ({
   usernameToAuthkey,
   testAccountExists,
@@ -8,6 +10,7 @@ module.exports = ({
   const signIn = async (req, res, next) => {
     const { username } = req.body;
     const authkey = await usernameToAuthkey(username);
+    console.log("authkey: ", username, authkey);
     res.data = {
       authkey,
     };
@@ -15,11 +18,11 @@ module.exports = ({
   };
 
   signIn.test = async (req, res, next) => {
-    const { username, password } = req.body;
+    const { username, hashedPass } = req.body;
 
     try {
       usernamePasswordSchema.validateSync(
-        { username, password },
+        { username, hashedPass },
         { strict: true, abortEarly: false }
       );
     } catch (error) {
@@ -36,7 +39,14 @@ module.exports = ({
       return;
     }
 
-    if (!(await testUsernamePassword(username, password))) {
+    console.log(username, hashedPass, getHashedPass(username, hashedPass));
+
+    if (
+      !(await testUsernamePassword(
+        username,
+        getHashedPass(username, hashedPass)
+      ))
+    ) {
       res.status(400).json({
         error: "Password is incorrect",
       });
