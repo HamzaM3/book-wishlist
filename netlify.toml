@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/*"
+  to = "/book_wishlist"
+  status = 200
+  query = {path = ":path"}
