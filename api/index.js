@@ -31,32 +31,32 @@ app.use((req, res, next) => {
 
 app.use(cors(), express.json({ limit: "200gb" }));
 
-app.get("/keys", sendKeys);
+app.get("/api/keys", sendKeys);
 
-app.get("/**", (req, res, next) => {
+app.get("/api/**", (req, res, next) => {
   req.body = req.query;
   next();
 });
 
-app.delete("/**", (req, res, next) => {
+app.delete("/api/**", (req, res, next) => {
   req.body = req.query;
   next();
 });
 
 app.use(decryptMiddleware);
 
-app.get("/", getBooks.test, getBooks);
+app.get("/api", getBooks.test, getBooks);
 
-app.get("/signIn", signIn.test, signIn);
+app.get("/api/signIn", signIn.test, signIn);
 
-app.post("/signUp", signUp.test, signUp);
+app.post("/api/signUp", signUp.test, signUp);
 
-app.post("/", addBook.test, addBook);
+app.post("/api", addBook.test, addBook);
 
-app.delete("/", deleteBook.test, deleteBook);
+app.delete("/api", deleteBook.test, deleteBook);
 
 app.use(encryptMiddleware);
 
-app.listen(5500);
+console.log("hey");
 
-console.log("server on");
+module.exports = app;

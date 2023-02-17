@@ -24,7 +24,7 @@ const throwError = (e, RSA) => {
   throw e.response.data;
 };
 
-const BASE_URL = "http://localhost:5500";
+const BASE_URL = "https://book-wishlist.vercel.app";
 
 const CryptoProvider = ({ children }) => {
   const RSA = useRSA();

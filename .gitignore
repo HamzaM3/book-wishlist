@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 .env
+what_have_I_learned.md
+.vercel

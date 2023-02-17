@@ -1,28 +1,41 @@
 const forge = require("node-forge");
 
 const { generateKeyPair, setPublicKey } = forge.pki.rsa;
-const { publicKeyFromPem, publicKeyToPem } = forge.pki;
+const { publicKeyFromPem, privateKeyFromPem } = forge.pki;
 
-const getKeyPair = (bits) => {
-  keys = generateKeyPair({ bits, e: 0x10001 });
+// const getKeyPair = (bits) => {
+//   const keys = generateKeyPair({ bits, e: 0x10001 });
 
-  const n = keys.privateKey.n;
-  const d = keys.privateKey.d;
+//   const n = keys.privateKey.n;
+//   const d = keys.privateKey.d;
 
-  keys.privateKey.encrypt = (message) => {
-    const k = setPublicKey(n, d);
-    return k.encrypt(message, "RSA-OAEP");
-  };
+//   keys.privateKey.encrypt = (message) => {
+//     const k = setPublicKey(n, d);
+//     return k.encrypt(message, "RSA-OAEP");
+//   };
 
-  return keys;
-};
+//   return keys;
+// };
 
 module.exports = () => {
-  const verifyKeys = getKeyPair(1024);
-  const encryptKeys = getKeyPair(2048);
+  const {
+    VERIFY_PUBLIC_KEY,
+    VERIFY_PRIVATE_KEY,
+    ENCRYPT_PUBLIC_KEY,
+    ENCRYPT_PRIVATE_KEY,
+  } = process.env;
 
-  const verifyPem = publicKeyToPem(verifyKeys.publicKey);
-  const encryptPem = publicKeyToPem(encryptKeys.publicKey);
+  const verifyKeys = {
+    privateKey: privateKeyFromPem(VERIFY_PRIVATE_KEY),
+    publicKey: publicKeyFromPem(VERIFY_PUBLIC_KEY),
+  };
+  const encryptKeys = {
+    privateKey: privateKeyFromPem(ENCRYPT_PRIVATE_KEY),
+    publicKey: publicKeyFromPem(ENCRYPT_PUBLIC_KEY),
+  };
+
+  const verifyPem = VERIFY_PUBLIC_KEY;
+  const encryptPem = ENCRYPT_PUBLIC_KEY;
 
   const encrypt = (pem, message) => {
     const m1 = verifyKeys.privateKey.encrypt(message);

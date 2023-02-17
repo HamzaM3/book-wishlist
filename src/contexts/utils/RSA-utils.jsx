@@ -52,7 +52,7 @@ export const getMachineKeys = () => {
 export const getServerKeys = async () => {
   let {
     data: { verifyKey, encryptKey },
-  } = await axios.get("http://localhost:5500/keys");
+  } = await axios.get("https://book-wishlist.vercel.app/keys");
 
   verifyKey = publicKeyFromPem(verifyKey);
   verifyKey.decrypt = (message) => {
