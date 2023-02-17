@@ -1,22 +1,17 @@
 const { usernamePasswordSchema } = require("./utils/schemas");
 const { getAuthkey, getHashedPass } = require("../../crypto/hashing");
 
-module.exports = ({
-  usernameToAuthkey,
-  createNewAccount,
-  testAccountExists,
-}) => {
+module.exports = ({ createNewAccount, testAccountExists }) => {
   const signUp = async (req, res, next) => {
     const { username, hashedPass, userNumber, timestamp } = req.body;
+    const seed = req.seed;
 
     const authkey = getAuthkey(username, hashedPass, userNumber, timestamp);
-
-    console.log(username, hashedPass, getHashedPass(username, hashedPass));
 
     if (
       !(await createNewAccount(
         username,
-        getHashedPass(username, hashedPass),
+        getHashedPass(username, hashedPass, seed),
         authkey
       ))
     ) {

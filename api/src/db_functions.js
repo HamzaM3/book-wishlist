@@ -46,8 +46,7 @@ const db_functions = (db) => {
       select
         b.id,
         b.title,
-        b.author,
-        b.bookcover
+        b.author
       from
         book b
       where
@@ -81,22 +80,6 @@ const db_functions = (db) => {
         and 
         hashedPass = $${security}$${hashedPass}$${security}$;
     `);
-    return valid > 0;
-  };
-
-  const testAuthorizedToAccessImage = async (authkey, bookcover) => {
-    const security = getSecurity();
-    const [{ valid }] = await db.any(`
-      select
-        count(*) as valid
-      from
-        book
-      where
-        authkey = $${security}$${authkey}$${security}$
-        and
-        bookcover = $${security}$${bookcover}$${security}$;
-    `);
-
     return valid > 0;
   };
 
@@ -134,17 +117,16 @@ const db_functions = (db) => {
     }
   };
 
-  const createNewBook = async (title, author, bookcover, authkey) => {
+  const createNewBook = async (title, author, authkey) => {
     const security = getSecurity();
     try {
       await db.none(`
       insert 
-        into book(authkey, title, author${bookcover ? ", bookcover" : ""})
+        into book(authkey, title, author)
         values (
           $${security}$${authkey}$${security}$,
           $${security}$${title}$${security}$,
           $${security}$${author}$${security}$
-          ${bookcover ? `, $${security}$${bookcover}$${security}$` : ""}
         )
       `);
       return true;
@@ -157,12 +139,6 @@ const db_functions = (db) => {
   const deleteBookFromId = async (id) => {
     try {
       const security = getSecurity();
-      const bookcover = await getImageFromId(id);
-
-      if (bookcover)
-        await fs.unlinkSync(
-          path.resolve(__dirname, "../bookCovers", bookcover)
-        );
 
       await db.none(`
         delete from book where id = $${security}$${id}$${security}$
@@ -175,15 +151,6 @@ const db_functions = (db) => {
     }
   };
 
-  const getImageFromId = async (id) => {
-    const security = getSecurity();
-    const [{ bookcover }] = await db.any(`
-      select bookcover from book where id = $${security}$${id}$${security}$
-    `);
-
-    return bookcover;
-  };
-
   return {
     authkeyToUsername,
     usernameToAuthkey,
@@ -192,10 +159,8 @@ const db_functions = (db) => {
     testUsernamePassword,
     createNewAccount,
     createNewBook,
-    testAuthorizedToAccessImage,
     deleteBookFromId,
     testAuthorizedToAccessBook,
-    getImageFromId,
   };
 };
 

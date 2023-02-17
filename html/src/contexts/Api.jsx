@@ -78,8 +78,6 @@ const ApiProvider = ({ children }) => {
 
   const deleteBook = delete_("/");
 
-  const getImage = get("/bookcover");
-
   return (
     <Api.Provider
       value={{
@@ -89,7 +87,6 @@ const ApiProvider = ({ children }) => {
         getBooks,
         addBook,
         deleteBook,
-        getImage,
       }}
     >
       {children}

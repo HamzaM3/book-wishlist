@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
   RouterProvider,
-  redirect,
   Navigate,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
@@ -14,10 +13,6 @@ import AESProvider from "./contexts/AES";
 import CryptoProvider from "./contexts/Crypto";
 import { Main, SignIn, SignUp, AddBook } from "./routes";
 import "./styles/main.css";
-
-const goToRoot = async () => {
-  return redirect("/");
-};
 
 const router = createBrowserRouter(
   [

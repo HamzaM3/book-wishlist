@@ -17,10 +17,9 @@ const AddBook = () => {
         initialValues={{
           title: "",
           author: "",
-          bookCoverUrl: "",
         }}
-        onSubmit={async ({ title, author, bookCoverUrl }, { resetForm }) => {
-          addBook({ title, author, bookCoverUrl });
+        onSubmit={async ({ title, author }, { resetForm }) => {
+          addBook({ title, author });
           resetForm();
         }}
       >
@@ -40,14 +39,6 @@ const AddBook = () => {
               id="author"
               name="author"
               placeholder="Some incredible writer"
-            />
-          </div>
-          <div className="form-field">
-            <div className="form-label">Book cover image url</div>
-            <Field
-              id="bookCoverUrl"
-              name="bookCoverUrl"
-              placeholder="http://book-cover.com"
             />
           </div>
           <button type="submit">Add Book</button>

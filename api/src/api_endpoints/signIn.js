@@ -10,7 +10,6 @@ module.exports = ({
   const signIn = async (req, res, next) => {
     const { username } = req.body;
     const authkey = await usernameToAuthkey(username);
-    console.log("authkey: ", username, authkey);
     res.data = {
       authkey,
     };
@@ -19,6 +18,7 @@ module.exports = ({
 
   signIn.test = async (req, res, next) => {
     const { username, hashedPass } = req.body;
+    const seed = req.seed;
 
     try {
       usernamePasswordSchema.validateSync(
@@ -39,12 +39,10 @@ module.exports = ({
       return;
     }
 
-    console.log(username, hashedPass, getHashedPass(username, hashedPass));
-
     if (
       !(await testUsernamePassword(
         username,
-        getHashedPass(username, hashedPass)
+        getHashedPass(username, hashedPass, seed)
       ))
     ) {
       res.status(400).json({

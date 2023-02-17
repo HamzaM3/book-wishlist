@@ -1,11 +1,6 @@
 const { randomBytes, createHash } = require("crypto");
 
-module.exports.getHashedPass = (username, hashedPass) => {
-  // input by hand at start of server
-  // RAM is considered unaccessible
-  // If it's not, then obfuscation is necessary
-  const seed = "seed";
-
+module.exports.getHashedPass = (username, hashedPass, seed) => {
   const hash = createHash("sha512");
 
   const data = hash.update(username + hashedPass + seed, "utf-8");

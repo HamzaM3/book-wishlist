@@ -10,6 +10,8 @@ const {
   createNewAccount,
 } = require("./db_functions")(db);
 
+// Doesn't work anymore (fill the db with correct data)
+
 describe("authkeyToUsername", () => {
   it("returns the username if the account exists", () => {
     expect(authkeyToUsername(1)).resolves.toBe("user");
