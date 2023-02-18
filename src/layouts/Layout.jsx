@@ -64,16 +64,35 @@ const contentStyle = css`
   justify-content: center;
 `;
 
+const rightSideStyle = css`
+  display: flex;
+  gap: 10px;
+  a {
+    align-self: end;
+    justify-self: end;
+  }
+  p {
+    margin: 0;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+`;
+
 const Root = () => {
-  const { authkey, connected } = useAuthkey();
-  const { signIn, logOut } = useApi();
+  const { connected } = useAuthkey();
+  const { logOut } = useApi();
 
   return (
     <div css={layoutStyle}>
       <nav css={headerStyle}>
-        <Link to="/">
-          <h1 css={titleStyle}>Secure book wishlist</h1>
-        </Link>
+        <div css={rightSideStyle}>
+          <Link to="/">
+            <h1 css={titleStyle}>Secure book wishlist</h1>
+          </Link>
+          <a href="/pdf/proof.pdf">
+            <p>(see proof of security)</p>
+          </a>
+        </div>
         <div css={buttonsGroupStyle}>
           {!connected ? (
             <>
