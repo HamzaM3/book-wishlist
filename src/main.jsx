@@ -43,8 +43,8 @@ const router = createBrowserRouter(
       path: "*",
       element: <Navigate to="/" replace />,
     },
-  ],
-  { basename: "/book_wishlist" }
+  ]
+  // { basename: "/book_wishlist" }
 );
 
 ReactDOM.createRoot(document.getElementById("root")).render(
